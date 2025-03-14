@@ -2,4 +2,82 @@
 title: "Portfolio 7"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+In this portfolio, I will complete my analysis of the diamonds dataset by identifying the "best" linear regression model and comparing the models selected using Adjusted R-squared and AIC. 
+
+#load the data
+```{r}
+library(ggplot2)
+data(diamonds)
+head(diamonds)
+summary(diamonds)
+?diamonds
+```
+
+#Linear Regression Model
+
+```{r}
+diamonds$color <- factor(diamonds$color, ordered = FALSE)
+diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
+diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
+# factors are table, depth, clarity, color, cut, carat
+```
+
+```{r}
+full_model <- lm(price ~ carat + cut + color + clarity + depth + table, data = diamonds)
+summary(full_model)
+#Adjusted R-squared:  0.916 
+```
+#Model Selection Using Stepwise Regression
+```{r}
+best_model1 <- step(full_model, direction = "both", trace = FALSE)
+#This automatically selects the best model based on AIC (Akaike Information Criterion).
+summary (best_model1)
+# the best model based on AIC includes all the six factors. 
+```
+
+#model selection based on Adjusted R-squared
+```{r}
+model1 <- lm(price ~ carat + cut + color + clarity + depth + table, data = diamonds)
+summary(model1)$r.squared
+#[1] 0.9160543
+```
+```{r}
+model2 <- lm(price ~ carat + cut + color + clarity + depth , data = diamonds)
+summary(model2)$r.squared
+#[1] 0.9159463, removed the "table" factor 
+```
+
+```{r}
+model3 <- lm(price ~ carat + cut + color + clarity  + table , data = diamonds)
+summary(model3)$r.squared
+#[1] 0.916013, removed the "depth" factor 
+```
+
+```{r}
+model4 <- lm(price ~ carat + cut + color  + depth + table , data = diamonds)
+summary(model4)$r.squared
+#[1] 0.871565, removed the "clarity" factor 
+```
+
+```{r}
+model5 <- lm(price ~ carat + cut  + clarity + depth + table , data = diamonds)
+summary(model5)$r.squared
+#[1] 0.8971377, removed the "color" factor 
+```
+
+```{r}
+model6 <- lm(price ~ carat +  color + clarity + depth + table , data = diamonds)
+summary(model6)$r.squared
+#[1] 0.9149359, removed the "cut" factor 
+```
+
+```{r}
+model7 <- lm(price ~  cut + color + clarity + depth + table , data = diamonds)
+summary(model7)$r.squared
+#[1] 0.0718017, removed the "carat" factor 
+```
+ 
+ 
+The best model, determined by Adjusted R-squared, includes all six factors, which aligns with the selection made using the AIC method.
+
+
